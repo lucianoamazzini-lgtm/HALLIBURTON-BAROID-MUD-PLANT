@@ -69,6 +69,9 @@ select{width:100%;border:1px solid transparent;border-radius:4px;padding:6px 3px
 </main>
 <script>
 const FLUIDS=['DENSO','BASE','BASE CONCENTRADO','DIESEL','DIESEL CONTAMINADO','SALMUERA','AGUA','CORTE','LIVIANO','SIN USO','KILL MUD','TRON'];
+ const SUPABASE_URL = 'https://yvvyjvbagkvragrogmgu.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_Tqssdb9Js9A3vYZV3xyV2A_V-1OF_vu';
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const initialVolumes=Array(42).fill(0);
 const initialTypes=Array(42).fill('SIN USO');
 const initialObs={10:'Transferencia',35:'NO USAR',42:'(fondo)'};
