@@ -260,6 +260,21 @@ button{transition:filter .15s ease}
   }
 }
 
+
+/* AJUSTE SOLICITADO: volumenes mas grandes/negrita y textos centrados, sin cambiar tablas */
+@media print {
+  #tankTables td:nth-child(1) { text-align:center !important; }
+  #tankTables td:nth-child(2) input[data-field="volumen"] {
+    font-size:8.5pt !important; font-weight:800 !important; text-align:center !important;
+    padding:0 !important; margin:0 !important; width:100% !important;
+    background:transparent !important; border:0 !important; color:#111 !important;
+  }
+  #tankTables td:nth-child(3) select[data-field="tipo_fluido"] {
+    text-align:center !important; text-align-last:center !important;
+    font-weight:600 !important; width:100% !important; padding:0 !important; margin:0 !important;
+  }
+}
+
 </style>
 </head>
 <body>
