@@ -132,6 +132,21 @@ button{transition:filter .15s ease}
  .panel, .tank-table { border:0.6px solid #333 !important; border-radius:0 !important; box-shadow:none !important; }
  .tank-table th, .panel h2 { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
 }
+
+/* IMPRESION: mostrar solamente la tabla de piletas */
+@media print {
+  header, .statusbar, .note, main > .summary-grid, main > .bottom, main > .legend, main > section.panel:not(:has(#tankTables)) { display: none !important; }
+  @page { size: A4 landscape; margin: 5mm; }
+  main { margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: none !important; }
+  main > section.panel:has(#tankTables) { display: block !important; margin: 0 !important; padding: 0 !important; border: 0 !important; box-shadow: none !important; }
+  main > section.panel:has(#tankTables) > h2 { display: none !important; }
+  #tankTables.tanks { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 3mm !important; padding: 0 !important; margin: 0 !important; }
+  #tankTables .tank-table { min-width: 0 !important; width: 100% !important; overflow: visible !important; break-inside: avoid !important; }
+  #tankTables table { width: 100% !important; table-layout: fixed !important; border-collapse: collapse !important; }
+  #tankTables th, #tankTables td { font-size: 8pt !important; padding: 2px 3px !important; height: 17px !important; border: 1px solid #222 !important; }
+  #tankTables input, #tankTables select { font-size: 7.5pt !important; height: 16px !important; padding: 0 2px !important; border: 0 !important; color: #111 !important; background: transparent !important; }
+}
+
 </style>
 </head>
 <body>
