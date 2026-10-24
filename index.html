@@ -209,7 +209,9 @@ button{transition:filter .15s ease}
   #tankTables .fluid-KILL-MUD { background:#ffb52e !important; color:#111 !important; display:block !important; }
   #tankTables .fluid-DIESEL-CONTAMINADO { background:#ffcf35 !important; color:#111 !important; display:block !important; }
   #tankTables .fluid-TRON { background:#9a64c9 !important; color:#111 !important; display:block !important; }
-  #tankTables .fluid-SIN-USO { background:#70d45b !important; color:#111 !important; display:block !important; }
+  #tankTables .fluid-SIN-USO { background:#f1f2f3 !important; color:#222 !important; display:block !important; }
+  #tankTables td:has(select.fluid-SIN-USO) { background:#f1f2f3 !important; color:#222 !important; }
+  #tankTables select.fluid-SIN-USO, #tankTables option[value="SIN USO"] { background-color:#f1f2f3 !important; color:#222 !important; }
   main > .summary-grid { grid-column:2 !important; grid-row:1 !important; width:48mm !important; max-width:48mm !important; gap:3mm !important; }
   main > .summary-grid .panel h2 { font-size:7pt !important; padding:1.5mm !important; background:#e6e6e6 !important; color:#111 !important; border-left:0 !important; text-align:center !important; }
   .summary-grid table { width:100% !important; table-layout:fixed !important; }
