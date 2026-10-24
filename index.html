@@ -48,6 +48,43 @@ button{transition:filter .15s ease}
 #tankTables .tank-table { min-width:0; }
 @media(max-width:850px) { #tankTables.tanks { grid-template-columns:1fr; } }
 @media print { #tankTables.tanks { display:grid !important; grid-template-columns:1fr 1fr !important; gap:5px !important; } }
+
+/* IMPRESION COMPACTA: una sola hoja A4 horizontal */
+@page { size: A4 landscape; margin: 4mm; }
+@media print {
+  html, body { width: 100% !important; height: auto !important; margin: 0 !important; padding: 0 !important; }
+  body { font-size: 6.5px !important; line-height: 1.05 !important; }
+  header { min-height: 0 !important; padding: 3mm 4mm !important; border-bottom: 2px solid #d71920 !important; box-shadow: none !important; gap: 4px !important; }
+  .brand { gap: 6px !important; padding: 2px 5px !important; border-left-width: 3px !important; }
+  .brand-logo { width: 38px !important; height: 38px !important; }
+  .brand h1 { font-size: 16px !important; line-height: 1 !important; }
+  .brand p { font-size: 7px !important; margin: 1px 0 0 !important; }
+  .actions, header .actions, .no-print { display: none !important; }
+  main { width: 100% !important; max-width: none !important; padding: 2mm 0 0 !important; margin: 0 !important; }
+  .statusbar { gap: 4px !important; margin: 0 0 2px !important; }
+  .pill { padding: 2px 5px !important; font-size: 6px !important; }
+  .note { margin: 1px 0 3px !important; font-size: 6px !important; }
+  .panel, .tank-table { border-radius: 0 !important; box-shadow: none !important; }
+  .panel h2 { padding: 3px 5px !important; font-size: 8px !important; line-height: 1 !important; border-left-width: 3px !important; }
+  #tankTables.tanks { display: grid !important; grid-template-columns: minmax(0,1fr) minmax(0,1fr) !important; gap: 3px !important; padding: 2px !important; width: 100% !important; overflow: visible !important; }
+  #tankTables .tank-table { width: 100% !important; min-width: 0 !important; overflow: visible !important; }
+  #tankTables .tank-table h3 { display: none !important; }
+  table { width: 100% !important; table-layout: fixed !important; border-collapse: collapse !important; }
+  th, td { padding: 1px 2px !important; font-size: 6px !important; line-height: 1 !important; height: 11px !important; border-width: .5px !important; overflow-wrap: anywhere !important; }
+  .tank-table th:nth-child(1), .tank-table td:nth-child(1) { width: 18% !important; }
+  .tank-table th:nth-child(2), .tank-table td:nth-child(2) { width: 18% !important; }
+  .tank-table th:nth-child(3), .tank-table td:nth-child(3) { width: 27% !important; }
+  .tank-table th:nth-child(4), .tank-table td:nth-child(4) { width: 37% !important; }
+  input, select, textarea { height: 10px !important; min-height: 0 !important; padding: 0 1px !important; margin: 0 !important; font-size: 6px !important; line-height: 1 !important; border: .5px solid #bbb !important; border-radius: 0 !important; background: transparent !important; color: #111 !important; appearance: none !important; }
+  .summary-grid { display: grid !important; grid-template-columns: 1.4fr .8fr !important; gap: 4px !important; margin-top: 3px !important; }
+  .bottom { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 4px !important; margin-top: 3px !important; }
+  .summary-grid .panel h2, .bottom .panel h2 { padding: 3px !important; font-size: 7px !important; }
+  .panel-content { padding: 3px !important; }
+  .legend { display: none !important; }
+  .swatch, .fluid-DENSO, .fluid-BASE, .fluid-DIESEL, .fluid-SALMUERA, .fluid-AGUA, .fluid-CORTE, .fluid-LIVIANO, .fluid-BASE-CONCENTRADO, .fluid-KILL-MUD, .fluid-DIESEL-CONTAMINADO, .fluid-TRON, .fluid-SIN-USO { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  .panel, .tank-table, #tankTables, .summary-grid, .bottom { break-inside: avoid !important; page-break-inside: avoid !important; }
+}
+
 </style>
 </head>
 <body>
