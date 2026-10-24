@@ -1,97 +1,606 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
- <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mud Plant | Control de piletas</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
-:root{--navy:#17334d;--navy2:#214764;--line:#c8d0d7;--bg:#f3f6f8;--text:#17212b}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.35 "Segoe UI",Arial,sans-serif}
-header{background:linear-gradient(110deg,var(--navy),var(--navy2));color:white;padding:16px 22px;display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}
-.brand h1{font-size:30px;margin:0;font-weight:750;letter-spacing:-.5px}.brand p{margin:3px 0 0;color:#d7e3ec;font-size:15px}
-.actions{display:flex;gap:8px;flex-wrap:wrap}button{border:0;border-radius:7px;padding:10px 14px;font-weight:650;cursor:pointer;background:#fff;color:#17212b}button.primary{background:#0879d1;color:white}button.green{background:#159447;color:white}button:disabled{opacity:.5;cursor:not-allowed}
-main{padding:14px;max-width:1800px;margin:auto}.statusbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 12px}.pill{padding:6px 10px;background:white;border:1px solid var(--line);border-radius:20px}.pill strong{margin-right:4px}
-.layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,350px);gap:14px;align-items:start}
-.tanks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.tank-table,.panel{background:white;border:1px solid var(--line);border-radius:8px;overflow:hidden}
-table{width:100%;border-collapse:collapse}th{background:var(--navy);color:white;text-align:left;padding:9px 7px;font-size:12px}td{border:1px solid var(--line);padding:4px 5px}td:first-child{text-align:center;font-weight:650;white-space:nowrap}.vol{width:100%;min-width:52px;border:1px solid transparent;border-radius:4px;padding:6px 4px;text-align:right;font:inherit;background:#fff} .vol:focus,.obs:focus,select:focus,input:focus{outline:2px solid #4c9be8;outline-offset:0}
-select{width:100%;border:1px solid transparent;border-radius:4px;padding:6px 3px;font:inherit;font-weight:650}.obs{width:100%;min-width:75px;border:1px solid transparent;border-radius:4px;padding:6px 3px;font:inherit}
-.fluid-DENSO{background:#69b95e!important;color:#102b13}.fluid-BASE{background:#a27bf1!important;color:#21123f}.fluid-DIESEL{background:#ffdf35!important;color:#302700}.fluid-SALMUERA{background:#ff7887!important;color:#3b0d14}.fluid-AGUA{background:#55a5f7!important;color:#062748}.fluid-CORTE{background:#b6df68!important;color:#26350c}.fluid-LIVIANO{background:#e1f0d4!important;color:#24351b}.fluid-SIN-USO{background:#d4d8dc!important;color:#29313a}.fluid-KILL-MUD{background:#f3a05d!important;color:#47240b}.fluid-BASE-CONCENTRADO{background:#c2a0ff!important;color:#2a1749}.fluid-DIESEL-CONTAMINADO{background:#b8a15a!important;color:#342a0b}.fluid-TRON{background:#f1b0a5!important;color:#4a2119}
-.sidebar{display:grid;gap:12px}.panel h2{margin:0;background:var(--navy);color:white;padding:10px 12px;font-size:17px}.panel table th{background:#e9edf1;color:#18232d}.panel td{padding:8px}.total-row td{background:var(--navy);color:white;font-weight:750}.fluid-cell{font-weight:700}.metric{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px}.metric div{background:#f0f4f7;border:1px solid #d8e0e6;border-radius:7px;padding:10px}.metric strong{display:block;font-size:21px;margin-top:4px}
-.silos-input{width:100%;padding:6px;border:1px solid var(--line);border-radius:4px}.bottom{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}.fieldbox{background:white;border:1px solid var(--line);border-radius:8px;padding:12px}.fieldbox h3{margin:0 0 8px;color:var(--navy)}.fieldbox input,.fieldbox textarea{width:100%;padding:8px;border:1px solid var(--line);border-radius:5px;font:inherit}.fieldbox textarea{min-height:70px;resize:vertical}.legend{margin-top:12px;background:white;border:1px solid var(--line);border-radius:8px;padding:12px;display:flex;gap:12px;flex-wrap:wrap;align-items:center}.legend-item{display:flex;align-items:center;gap:6px}.swatch{width:25px;height:17px;border-radius:4px;display:inline-block;border:1px solid #0001}.small{font-size:12px;color:#52616e}.print-only{display:none}
-@media(max-width:1000px){.layout{grid-template-columns:1fr}.sidebar{grid-template-columns:repeat(2,minmax(0,1fr))}.tanks{grid-template-columns:1fr 1fr}}
-@media(max-width:650px){.tanks,.sidebar,.bottom{grid-template-columns:1fr}header{padding:14px}.brand h1{font-size:25px}main{padding:8px}}
-@media print{
- @page{size:A4 landscape;margin:7mm}
- *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;color-adjust:exact!important}
- body{background:white;font-size:8px;color:#111}header{padding:0 0 7px;background:white!important;color:#111;border-bottom:2px solid var(--navy);margin-bottom:5px}.brand h1{font-size:21px;color:var(--navy)}.brand p{color:#333;font-size:10px}.actions,.statusbar,.no-print{display:none!important}main{padding:0;max-width:none}.layout{grid-template-columns:minmax(0,1fr) 210px;gap:6px}.tanks{gap:5px}.tank-table,.panel,.fieldbox{border-radius:0;break-inside:avoid}th{padding:4px 3px;font-size:7px}td{padding:2px 3px;font-size:7px}input,select,textarea,.vol,.obs{border:0!important;padding:1px!important;background:transparent!important;color:#111!important;font-size:7px!important;appearance:none}.sidebar{gap:5px}.panel h2{font-size:10px;padding:5px}.panel td,.panel th{padding:3px}.bottom{margin-top:5px;gap:5px}.fieldbox{padding:5px}.fieldbox h3{font-size:9px}.fieldbox textarea{min-height:34px}.legend{margin-top:5px;padding:5px;gap:7px}.swatch{width:13px;height:9px}.print-only{display:block}.print-meta{font-size:9px;display:flex;gap:15px;flex-wrap:wrap}.signature{height:30px;border-bottom:1px solid #333;margin:12px 10px 3px}.bottom{grid-template-columns:1fr 140px 140px}
+:root {
+  --navy:#17334d;
+  --navy2:#214764;
+  --line:#c8d0d7;
+  --bg:#f3f6f8;
+  --text:#17212b;
+}
+* { box-sizing:border-box; }
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font:14px/1.4 "Segoe UI",Arial,sans-serif;
+}
+header {
+  background:linear-gradient(110deg,var(--navy),var(--navy2));
+  color:white;
+  padding:16px 22px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  flex-wrap:wrap;
+}
+.brand h1 { font-size:30px; margin:0; }
+.brand p { margin:3px 0 0; font-size:15px; }
+.actions { display:flex; gap:8px; flex-wrap:wrap; }
+button {
+  border:0;
+  border-radius:7px;
+  padding:10px 14px;
+  font-weight:650;
+  cursor:pointer;
+  background:#fff;
+  color:var(--text);
+}
+button.primary { background:#087fc9; color:white; }
+button.green { background:#169447; color:white; }
+main { padding:14px; max-width:1800px; margin:auto; }
+.statusbar {
+  display:flex;
+  gap:10px;
+  align-items:center;
+  flex-wrap:wrap;
+  margin-bottom:12px;
+}
+.pill {
+  padding:7px 12px;
+  background:white;
+  border:1px solid var(--line);
+  border-radius:20px;
+}
+.note { color:#52677a; font-size:13px; margin:8px 0 16px; }
+.layout {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(280px,1fr);
+  gap:14px;
+  align-items:start;
+}
+.panel,.tank-table {
+  background:white;
+  border:1px solid var(--line);
+  border-radius:8px;
+  overflow:hidden;
+}
+.panel h2 {
+  margin:0;
+  background:var(--navy);
+  color:white;
+  padding:12px;
+  font-size:18px;
+}
+.panel-content { padding:12px; }
+table { width:100%; border-collapse:collapse; }
+th {
+  background:#e9edf1;
+  text-align:left;
+  padding:9px 7px;
+}
+td { border:1px solid var(--line); padding:7px; }
+tfoot td { background:var(--navy); color:white; font-weight:bold; }
+input,select,textarea {
+  width:100%;
+  border:1px solid #c8d0d7;
+  border-radius:4px;
+  padding:7px 6px;
+  font:inherit;
+  color:var(--text);
+  background:white;
+}
+input[type=number] { min-width:75px; }
+textarea { min-height:75px; resize:vertical; }
+.tanks {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+  margin-top:14px;
+}
+.tank-table h3 {
+  margin:0;
+  padding:10px;
+  background:var(--navy);
+  color:white;
+}
+.tank-table th { font-size:12px; }
+.tank-table td { padding:5px; }
+.tank-table select { font-size:12px; }
+.tank-table input { font-size:12px; }
+.fluid-DENSO { background:#69b95e!important; color:#102b13; }
+.fluid-BASE { background:#a27bf1!important; color:#21123f; }
+.fluid-DIESEL { background:#ffdf35!important; color:#302500; }
+.fluid-SALMUERA { background:#ff7185!important; color:#42101b; }
+.fluid-AGUA { background:#529ff5!important; color:#fff; }
+.fluid-CORTE { background:#b4df64!important; color:#23320b; }
+.fluid-LIVIANO { background:#e1efd5!important; color:#24351a; }
+.fluid-BASE-CONCENTRADO { background:#c6a0ff!important; color:#32165c; }
+.fluid-KILL-MUD { background:#f6a05c!important; color:#43230c; }
+.fluid-DIESEL-CONTAMINADO { background:#b69e54!important; color:#30270d; }
+.fluid-TRON { background:#f2afa4!important; color:#481a13; }
+.fluid-SIN-USO { background:#d5d9dd!important; color:#29313a; }
+.bottom {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+  margin-top:14px;
+}
+.legend {
+  margin-top:14px;
+  background:white;
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:12px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+  align-items:center;
+}
+.legend-item { display:flex; align-items:center; gap:6px; }
+.swatch { width:30px; height:20px; border-radius:5px; display:inline-block; }
+@media(max-width:1000px) {
+  .layout { grid-template-columns:1fr; }
+}
+@media(max-width:650px) {
+  header { padding:14px; }
+  .brand h1 { font-size:25px; }
+  main { padding:8px; }
+  .tanks { grid-template-columns:1fr; }
+  .bottom { grid-template-columns:1fr; }
+  .tank-table { overflow-x:auto; }
+}
+@media print {
+  body { background:white; font-size:10px; }
+  header { padding:8px; print-color-adjust:exact; -webkit-print-color-adjust:exact; }
+  header .actions,.no-print { display:none!important; }
+  main { max-width:none; padding:4px; }
+  .layout { grid-template-columns:1fr 1fr; gap:6px; }
+  .panel h2,.tank-table h3,tfoot td {
+    print-color-adjust:exact;
+    -webkit-print-color-adjust:exact;
+  }
+  .tanks { grid-template-columns:1fr 1fr; gap:5px; }
+  .tank-table td,.tank-table th { padding:3px; }
+  .bottom { gap:6px; }
+  input,select,textarea { border:0; padding:2px; appearance:none; }
+  .panel,.tank-table,.legend { break-inside:avoid; }
+  .legend { gap:6px; padding:5px; }
 }
 </style>
 </head>
+
 <body>
 <header>
- <div class="brand"><h1>Mud Plant</h1><p>Control de Piletas y Volúmenes</p></div>
- <div class="actions no-print">
-  <button class="primary" id="saveBtn">Guardar ahora</button>
-  <button class="green" id="printBtn">Imprimir parte</button>
-  <button id="csvBtn">Exportar CSV</button>
- </div>
+  <div class="brand">
+    <h1>Mud Plant</h1>
+    <p>Control de Piletas y Volúmenes</p>
+  </div>
+  <div class="actions">
+    <button class="primary" id="saveBtn">Guardar ahora</button>
+    <button class="green" id="printBtn">Imprimir parte</button>
+    <button id="csvBtn">Exportar CSV</button>
+  </div>
 </header>
+
 <main>
- <div class="statusbar no-print">
-  <span class="pill"><strong>Estado:</strong><span id="connectionStatus">Modo local de prueba</span></span>
-  <span class="pill"><strong>Último cambio:</strong><span id="lastUpdate">—</span></span>
-  <span class="small">Esta versión guarda en esta computadora. La sincronización entre turnos se activa después de configurar el acceso seguro a Supabase.</span>
- </div>
- <div class="print-only print-meta">
-  <span><b>Fecha:</b> <span id="printDate"></span></span>
-  <span><b>Hora de impresión:</b> <span id="printTime"></span></span>
-  <span><b>Instalación:</b> <span id="printWell">LMP Loma Campana</span></span>
-  <span><b>Operador:</b> <span id="printOperator"></span></span>
- </div>
- <div class="layout">
-  <section class="tanks" id="tankTables"></section>
-  <aside class="sidebar">
-   <section class="panel"><h2>Totales por Tipo de Fluido</h2><table><thead><tr><th>Tipo de fluido</th><th>m³</th><th>%</th></tr></thead><tbody id="fluidTotals"></tbody><tfoot><tr class="total-row"><td>Total general</td><td id="grandTotal">0</td><td id="grandPct">100%</td></tr></tfoot></table></section>
-   <section class="panel"><h2>Silos de Barita</h2><table><thead><tr><th>Silo</th><th>Toneladas</th></tr></thead><tbody id="siloRows"></tbody><tfoot><tr class="total-row"><td>Total</td><td id="siloTotal">0</td></tr></tfoot></table></section>
-   <section class="panel"><h2>Datos del parte</h2><div class="metric"><div>Instalación<input id="well" class="silos-input" value="LMP Loma Campana" readonly></div><div>Operador<input id="operator" class="silos-input" placeholder="Nombre"></div></div></section>
-  </aside>
- </div>
- <div class="bottom">
-  <section class="fieldbox"><h3>Observaciones generales</h3><textarea id="generalObs" placeholder="Novedades del turno, transferencias, tareas pendientes..."></textarea></section>
-  <section class="fieldbox"><h3>Datos del parte</h3><div class="small">La fecha y hora del parte se generan al imprimir.</div></section>
-  <section class="fieldbox print-only"><div class="signature"></div><b>Firma turno saliente</b><div id="signOperator"></div></section>
-  <section class="fieldbox print-only"><div class="signature"></div><b>Firma turno entrante</b><div>Nombre y apellido</div></section>
- </div>
- <div class="legend"><strong>Referencias de colores</strong>
-  <span class="legend-item"><i class="swatch fluid-DENSO"></i>Denso</span><span class="legend-item"><i class="swatch fluid-BASE"></i>Base</span><span class="legend-item"><i class="swatch fluid-DIESEL"></i>Diesel</span><span class="legend-item"><i class="swatch fluid-SALMUERA"></i>Salmuera</span><span class="legend-item"><i class="swatch fluid-AGUA"></i>Agua</span><span class="legend-item"><i class="swatch fluid-CORTE"></i>Corte</span><span class="legend-item"><i class="swatch fluid-LIVIANO"></i>Liviano</span><span class="legend-item"><i class="swatch fluid-BASE-CONCENTRADO"></i>Base Concentrado</span><span class="legend-item"><i class="swatch fluid-KILL-MUD"></i>Kill Mud</span><span class="legend-item"><i class="swatch fluid-DIESEL-CONTAMINADO"></i>Diesel Contaminado</span><span class="legend-item"><i class="swatch fluid-TRON"></i>Tron</span><span class="legend-item"><i class="swatch fluid-SIN-USO"></i>Sin uso</span>
- </div>
- <p class="small no-print">Versión inicial de diseño. No cargues información operativa real hasta completar la conexión compartida y los permisos de seguridad.</p>
+  <div class="statusbar">
+    <div class="pill"><b>Estado:</b> <span id="status">Conectando...</span></div>
+    <div class="pill"><b>Último cambio:</b> <span id="lastChange">—</span></div>
+  </div>
+  <p class="note" id="notice">Conectando con la base de datos...</p>
+
+  <div class="layout">
+    <section class="panel">
+      <h2>Totales por Tipo de Fluido</h2>
+      <table>
+        <thead>
+          <tr><th>Tipo de fluido</th><th>m³</th><th>%</th></tr>
+        </thead>
+        <tbody id="fluidTotals"></tbody>
+        <tfoot>
+          <tr><td>Total general</td><td id="grandTotal">0</td><td id="grandPercent">100%</td></tr>
+        </tfoot>
+      </table>
+    </section>
+
+    <section class="panel">
+      <h2>Silos de Barita</h2>
+      <table>
+        <thead><tr><th>Silo</th><th>Toneladas</th></tr></thead>
+        <tbody>
+          <tr><td>Silo 1</td><td><input type="number" min="0" step="0.1" id="silo0" value="0"></td></tr>
+          <tr><td>Silo 2</td><td><input type="number" min="0" step="0.1" id="silo1" value="0"></td></tr>
+          <tr><td>Silo 3</td><td><input type="number" min="0" step="0.1" id="silo2" value="0"></td></tr>
+        </tbody>
+        <tfoot><tr><td>Total</td><td id="siloTotal">0</td></tr></tfoot>
+      </table>
+    </section>
+
+    <section class="panel">
+      <h2>Datos del parte</h2>
+      <div class="panel-content">
+        <label>Instalación
+          <input id="well" value="LMP Loma Campana">
+        </label>
+        <br><br>
+        <label>Operador
+          <input id="operator" placeholder="Nombre">
+        </label>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Observaciones generales</h2>
+      <div class="panel-content">
+        <textarea id="generalObs" placeholder="Novedades del turno, transferencias, tareas pendientes..."></textarea>
+      </div>
+    </section>
+  </div>
+
+  <div class="panel" style="margin-top:14px">
+    <h2>Piletas de la planta</h2>
+    <div id="tankTables" class="tanks" style="padding:10px"></div>
+  </div>
+
+  <div class="bottom">
+    <section class="panel">
+      <h2>Datos del parte</h2>
+      <div class="panel-content">
+        La fecha y hora del parte se generan al imprimir.
+        <p id="printDate"></p>
+        <p><b>Turno 1:</b> ____________________</p>
+        <p><b>Turno 2:</b> ____________________</p>
+        <p><b>Turno 3:</b> ____________________</p>
+      </div>
+    </section>
+    <section class="panel">
+      <h2>Resumen de sincronización</h2>
+      <div class="panel-content">
+        <p>Las piletas se guardan en la base compartida cuando la conexión está disponible.</p>
+        <p>Verificá el estado de conexión antes de usar o entregar el parte al siguiente turno.</p>
+      </div>
+    </section>
+  </div>
+
+  <div class="legend">
+    <b>Referencias de colores</b>
+    <span class="legend-item"><span class="swatch fluid-DENSO"></span>Denso</span>
+    <span class="legend-item"><span class="swatch fluid-BASE"></span>Base</span>
+    <span class="legend-item"><span class="swatch fluid-DIESEL"></span>Diesel</span>
+    <span class="legend-item"><span class="swatch fluid-SALMUERA"></span>Salmuera</span>
+    <span class="legend-item"><span class="swatch fluid-AGUA"></span>Agua</span>
+    <span class="legend-item"><span class="swatch fluid-CORTE"></span>Corte</span>
+    <span class="legend-item"><span class="swatch fluid-LIVIANO"></span>Liviano</span>
+    <span class="legend-item"><span class="swatch fluid-BASE-CONCENTRADO"></span>Base concentrado</span>
+    <span class="legend-item"><span class="swatch fluid-KILL-MUD"></span>Kill Mud</span>
+    <span class="legend-item"><span class="swatch fluid-DIESEL-CONTAMINADO"></span>Diesel contaminado</span>
+    <span class="legend-item"><span class="swatch fluid-TRON"></span>Tron</span>
+    <span class="legend-item"><span class="swatch fluid-SIN-USO"></span>Sin uso</span>
+  </div>
 </main>
+
 <script>
-const FLUIDS=['DENSO','BASE','BASE CONCENTRADO','DIESEL','DIESEL CONTAMINADO','SALMUERA','AGUA','CORTE','LIVIANO','SIN USO','KILL MUD','TRON'];
- const SUPABASE_URL = 'https://yvvyjvbagkvragrogmgu.supabase.co';
+const SUPABASE_URL = 'https://yvvyjvbagkvragrogmgu.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_Tqssdb9Js9A3vYZV3xyV2A_V-1OF_vu';
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-const initialVolumes=Array(42).fill(0);
-const initialTypes=Array(42).fill('SIN USO');
-const initialObs={10:'Transferencia',35:'NO USAR',42:'(fondo)'};
-let tanks=Array.from({length:42},(_,i)=>({id:i+1,nombre:`HASA ${i+1}`,volumen:initialVolumes[i]??0,tipo:initialTypes[i]??'SIN USO',observaciones:initialObs[i+1]??''}));
-let silos=[0,0,0];
-const saved=localStorage.getItem('mudPlantDraft');
-if(saved){try{const d=JSON.parse(saved);if(d.tanks?.length===42)tanks=d.tanks;if(Array.isArray(d.silos))silos=d.silos;['well','operator','generalObs'].forEach(k=>{if(d[k]!=null&&document.getElementById(k))document.getElementById(k).value=d[k]})}catch(e){}}
-const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const fluidClass=s=>'fluid-'+s.replaceAll(' ','-');
-function makeTables(){const host=document.getElementById('tankTables');host.innerHTML='';[[0,21],[21,42]].forEach(([start,end])=>{let html='<div class="tank-table"><table><thead><tr><th>Pileta</th><th>Volumen (m³)</th><th>Tipo de fluido</th><th>Observaciones</th></tr></thead><tbody>';for(let i=start;i<end;i++){const t=tanks[i];html+=`<tr><td>${esc(t.nombre)}</td><td><input aria-label="Volumen ${t.nombre}" class="vol" type="number" min="0" step="0.1" data-id="${t.id}" data-field="volumen" value="${t.volumen}"></td><td><select aria-label="Fluido ${t.nombre}" data-id="${t.id}" data-field="tipo" class="${fluidClass(t.tipo)}">${FLUIDS.map(f=>`<option ${f===t.tipo?'selected':''}>${f}</option>`).join('')}</select></td><td><input aria-label="Observaciones ${t.nombre}" class="obs" data-id="${t.id}" data-field="observaciones" value="${esc(t.observaciones)}"></td></tr>`}html+='</tbody></table></div>';host.insertAdjacentHTML('beforeend',html)});host.querySelectorAll('[data-id]').forEach(el=>el.addEventListener('change',onTankChange));host.querySelectorAll('[data-field="observaciones"]').forEach(el=>el.addEventListener('input',debouncedLocalSave))}
-function onTankChange(e){const id=Number(e.target.dataset.id),field=e.target.dataset.field,t=tanks[id-1];if(field==='volumen')t.volumen=Math.max(0,Number(e.target.value)||0);if(field==='tipo'){t.tipo=e.target.value;e.target.className=fluidClass(t.tipo)}if(field==='observaciones')t.observaciones=e.target.value;renderTotals();saveLocal()}
-function renderTotals(){const sums={};let total=0;tanks.forEach(t=>{sums[t.tipo]=(sums[t.tipo]||0)+Number(t.volumen||0);total+=Number(t.volumen||0)});document.getElementById('fluidTotals').innerHTML=FLUIDS.map(f=>({f,v:sums[f]||0})).filter(x=>x.v>0||x.f==='SIN USO').map(x=>`<tr><td class="fluid-cell ${fluidClass(x.f)}">${x.f}</td><td>${x.v.toLocaleString('es-AR',{maximumFractionDigits:1})}</td><td>${total?Math.round(x.v/total*100)+'%':'0%'}</td></tr>`).join('');document.getElementById('grandTotal').textContent=total.toLocaleString('es-AR',{maximumFractionDigits:1});document.getElementById('grandPct').textContent=total?'100%':'0%';document.getElementById('siloRows').innerHTML=silos.map((v,i)=>`<tr><td>${i+1}</td><td><input class="silos-input" type="number" min="0" step="0.1" data-silo="${i}" value="${v}"></td></tr>`).join('');document.getElementById('siloTotal').textContent=silos.reduce((a,b)=>a+Number(b||0),0).toLocaleString('es-AR',{maximumFractionDigits:1});document.querySelectorAll('[data-silo]').forEach(el=>el.addEventListener('change',e=>{silos[Number(e.target.dataset.silo)]=Math.max(0,Number(e.target.value)||0);renderTotals();saveLocal()}))}
-let saveTimer;function debouncedLocalSave(){clearTimeout(saveTimer);saveTimer=setTimeout(saveLocal,300)}
-function saveLocal(){const d={tanks,silos,well:document.getElementById('well').value,operator:document.getElementById('operator').value,generalObs:document.getElementById('generalObs').value};localStorage.setItem('mudPlantDraft',JSON.stringify(d));const now=new Date();document.getElementById('lastUpdate').textContent=now.toLocaleString('es-AR');document.getElementById('connectionStatus').textContent='Guardado local (esta PC)'}
-document.getElementById('saveBtn').addEventListener('click',()=>{saveLocal();alert('Borrador guardado en esta computadora. La sincronización entre turnos aún no está configurada.')});
-['well','operator','generalObs'].forEach(id=>document.getElementById(id).addEventListener('input',debouncedLocalSave));
-document.getElementById('printBtn').addEventListener('click',()=>{const d=new Date();document.getElementById('printDate').textContent=d.toLocaleDateString('es-AR');document.getElementById('printTime').textContent=d.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});document.getElementById('printWell').textContent='LMP Loma Campana';document.getElementById('printOperator').textContent=document.getElementById('operator').value||'________________';document.getElementById('signOperator').textContent=document.getElementById('operator').value||'Nombre y apellido';window.print()});
-document.getElementById('csvBtn').addEventListener('click',()=>{const rows=[['Pileta','Volumen (m3)','Tipo de fluido','Observaciones'],...tanks.map(t=>[t.nombre,t.volumen,t.tipo,t.observaciones]),[],['Silo','Toneladas'],...silos.map((v,i)=>[i+1,v]),['Pozo',document.getElementById('well').value],['Operador',document.getElementById('operator').value],['Observaciones generales',document.getElementById('generalObs').value]];const csv=rows.map(r=>r.map(v=>`"${String(v??'').replaceAll('"','""')}"`).join(';')).join('\r\n');const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='mud-plant-parte.csv';a.click();URL.revokeObjectURL(a.href)});
-makeTables();renderTotals();saveLocal();
+
+const FLUIDS = [
+  'DENSO','BASE','BASE CONCENTRADO','DIESEL',
+  'DIESEL CONTAMINADO','SALMUERA','AGUA','CORTE',
+  'LIVIANO','SIN USO','KILL MUD','TRON'
+];
+
+const initialObs = {
+  10:'Transferencia',
+  35:'NO USAR',
+  42:'(fondo)'
+};
+
+let tanks = Array.from({length:42},(_,i)=>({
+  id:i+1,
+  nombre:`HASA ${i+1}`,
+  volumen:0,
+  tipo_fluido:'SIN USO',
+  observaciones:initialObs[i+1] || ''
+}));
+
+let supabaseClient = null;
+let connected = false;
+let saveTimer = null;
+let isLoading = false;
+let remoteLoadInProgress = false;
+
+const $ = id => document.getElementById(id);
+
+function setStatus(message, note) {
+  $('status').textContent = message;
+  if (note) $('notice').textContent = note;
+}
+
+function fluidClass(type) {
+  return 'fluid-' + String(type || 'SIN USO')
+    .replaceAll(' ','-')
+    .replaceAll('_','-');
+}
+
+function esc(value) {
+  return String(value ?? '').replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+
+function makeTables() {
+  const host = $('tankTables');
+  host.innerHTML = '';
+
+  [[0,21],[21,42]].forEach(([start,end]) => {
+    let html = `<div class="tank-table"><h3>Piletas HASA ${start+1} a ${end}</h3>
+    <table><thead><tr>
+    <th>Pileta</th><th>Volumen m³</th><th>Tipo de fluido</th><th>Observaciones</th>
+    </tr></thead><tbody>`;
+
+    tanks.slice(start,end).forEach(t => {
+      html += `<tr>
+        <td><b>${esc(t.nombre)}</b></td>
+        <td><input type="number" min="0" step="0.1" data-id="${t.id}" data-field="volumen" value="${Number(t.volumen)||0}"></td>
+        <td><select data-id="${t.id}" data-field="tipo_fluido" class="${fluidClass(t.tipo_fluido)}">
+        ${FLUIDS.map(f=>`<option value="${esc(f)}" ${t.tipo_fluido===f?'selected':''}>${esc(f)}</option>`).join('')}
+        </select></td>
+        <td><input type="text" data-id="${t.id}" data-field="observaciones" value="${esc(t.observaciones)}"></td>
+      </tr>`;
+    });
+
+    html += '</tbody></table></div>';
+    host.insertAdjacentHTML('beforeend',html);
+  });
+
+  host.querySelectorAll('input,select').forEach(el => {
+    el.addEventListener('input', onTankChange);
+    el.addEventListener('change', onTankChange);
+  });
+}
+
+function onTankChange(e) {
+  if (isLoading || remoteLoadInProgress) return;
+
+  const id = Number(e.target.dataset.id);
+  const field = e.target.dataset.field;
+  const tank = tanks.find(t => t.id === id);
+  if (!tank || !field) return;
+
+  if (field === 'volumen') {
+    tank.volumen = Math.max(0, Number(e.target.value) || 0);
+  } else {
+    tank[field] = e.target.value;
+  }
+
+  if (field === 'tipo_fluido') {
+    e.target.className = fluidClass(tank.tipo_fluido);
+  }
+
+  renderTotals();
+  saveLocal();
+  queueRemoteSave();
+}
+
+function renderTotals() {
+  const sums = {};
+  let total = 0;
+
+  FLUIDS.forEach(f => sums[f] = 0);
+  tanks.forEach(t => {
+    const v = Math.max(0,Number(t.volumen)||0);
+    sums[t.tipo_fluido] = (sums[t.tipo_fluido] || 0) + v;
+    total += v;
+  });
+
+  $('fluidTotals').innerHTML = FLUIDS
+    .filter(f => sums[f] > 0)
+    .map(f => `<tr><td><span class="${fluidClass(f)}">${esc(f)}</span></td>
+      <td>${sums[f].toFixed(1)}</td>
+      <td>${total ? (sums[f]/total*100).toFixed(1)+'%' : '0%'}</td></tr>`)
+    .join('');
+
+  $('grandTotal').textContent = total.toFixed(1);
+  $('grandPercent').textContent = total ? '100%' : '0%';
+
+  const siloTotal = [0,1,2].reduce((sum,i) =>
+    sum + Math.max(0,Number($('silo'+i).value)||0),0);
+  $('siloTotal').textContent = siloTotal.toFixed(1);
+}
+
+function saveLocal() {
+  const data = {
+    tanks,
+    silos:[0,1,2].map(i => Number($('silo'+i).value)||0),
+    well:$('well').value,
+    operator:$('operator').value,
+    generalObs:$('generalObs').value
+  };
+
+  try {
+    localStorage.setItem('mudPlantDraft',JSON.stringify(data));
+  } catch (e) {
+    console.warn('No se pudo guardar el borrador local',e);
+  }
+}
+
+function loadLocal() {
+  try {
+    const saved = localStorage.getItem('mudPlantDraft');
+    if (!saved) return;
+
+    const d = JSON.parse(saved);
+    if (Array.isArray(d.tanks) && d.tanks.length === 42) {
+      tanks = d.tanks.map((t,i)=>({
+        id:i+1,
+        nombre:`HASA ${i+1}`,
+        volumen:Number(t.volumen)||0,
+        tipo_fluido:t.tipo_fluido || t.tipo || 'SIN USO',
+        observaciones:t.observaciones || ''
+      }));
+    }
+
+    if (Array.isArray(d.silos)) {
+      d.silos.forEach((v,i)=>{ if(i<3) $('silo'+i).value = Number(v)||0; });
+    }
+
+    if (d.well) $('well').value = d.well;
+    if (d.operator) $('operator').value = d.operator;
+    if (d.generalObs) $('generalObs').value = d.generalObs;
+  } catch (e) {
+    console.warn('No se pudo leer el borrador local',e);
+  }
+}
+
+async function loadRemote() {
+  if (!supabaseClient) return;
+
+  remoteLoadInProgress = true;
+  setStatus('Consultando base...', 'Leyendo las piletas compartidas...');
+
+  const {data,error} = await supabaseClient
+    .from('piletas')
+    .select('id,nombre,volumen,tipo_fluido,observaciones')
+    .order('id');
+
+  remoteLoadInProgress = false;
+
+  if (error) {
+    connected = false;
+    setStatus('Error de conexión', 'No se pudieron leer las piletas: ' + error.message);
+    console.error('Supabase load error:',error);
+    return;
+  }
+
+  if (Array.isArray(data) && data.length) {
+    data.forEach(row => {
+      const t = tanks.find(x => x.id === Number(row.id));
+      if (!t) return;
+      t.nombre = row.nombre || t.nombre;
+      t.volumen = Number(row.volumen)||0;
+      t.tipo_fluido = row.tipo_fluido || 'SIN USO';
+      t.observaciones = row.observaciones || '';
+    });
+    isLoading = true;
+    makeTables();
+    renderTotals();
+    isLoading = false;
+    saveLocal();
+  }
+
+  connected = true;
+  setStatus('Conectado', 'Piletas sincronizadas con Supabase. Los cambios se guardan automáticamente.');
+  $('lastChange').textContent = new Date().toLocaleTimeString('es-AR');
+}
+
+async function saveRemote() {
+  if (!supabaseClient || !connected) {
+    setStatus('Modo local', 'Los cambios quedan en esta computadora hasta recuperar la conexión.');
+    return;
+  }
+
+  setStatus('Guardando...', 'Enviando cambios a la base compartida...');
+
+  const rows = tanks.map(t => ({
+    id:t.id,
+    nombre:t.nombre,
+    volumen:Number(t.volumen)||0,
+    tipo_fluido:t.tipo_fluido || 'SIN USO',
+    observaciones:t.observaciones || ''
+  }));
+
+  const {error} = await supabaseClient
+    .from('piletas')
+    .upsert(rows,{onConflict:'id'});
+
+  if (error) {
+    setStatus('Error al guardar', 'No se guardaron los cambios en la base: ' + error.message);
+    console.error('Supabase save error:',error);
+    return;
+  }
+
+  setStatus('Conectado', 'Cambios guardados en la base compartida.');
+  $('lastChange').textContent = new Date().toLocaleTimeString('es-AR');
+}
+
+function queueRemoteSave() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveRemote,800);
+}
+
+async function refreshRemote() {
+  if (!supabaseClient || document.hidden || remoteLoadInProgress) return;
+  await loadRemote();
+}
+
+$('saveBtn').addEventListener('click', async () => {
+  saveLocal();
+  await saveRemote();
+});
+
+$('printBtn').addEventListener('click', () => {
+  $('printDate').textContent = new Date().toLocaleString('es-AR');
+  window.print();
+});
+
+$('csvBtn').addEventListener('click', () => {
+  const rows = [
+    ['Pileta','Volumen (m3)','Tipo de fluido','Observaciones'],
+    ...tanks.map(t => [t.nombre,t.volumen,t.tipo_fluido,t.observaciones])
+  ];
+  const csv = '\uFEFF' + rows.map(row =>
+    row.map(v => `"${String(v??'').replaceAll('"','""')}"`).join(';')
+  ).join('\r\n');
+
+  const blob = new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'parte-mud-plant.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+[0,1,2].forEach(i => $('silo'+i).addEventListener('input',()=>{
+  renderTotals();
+  saveLocal();
+}));
+['well','operator','generalObs'].forEach(id =>
+  $(id).addEventListener('input',saveLocal)
+);
+
+async function init() {
+  loadLocal();
+  makeTables();
+  renderTotals();
+
+  if (!window.supabase || !window.supabase.createClient) {
+    setStatus('Biblioteca no disponible',
+      'No se cargó Supabase. Revisá tu conexión a internet y recargá la página.');
+    return;
+  }
+
+  try {
+    supabaseClient = window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+    await loadRemote();
+    setInterval(refreshRemote,10000);
+  } catch (e) {
+    console.error(e);
+    setStatus('Error de inicialización','No se pudo iniciar la conexión con Supabase.');
+  }
+}
+
+init();
 </script>
 </body>
 </html>
