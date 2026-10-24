@@ -275,6 +275,23 @@ button{transition:filter .15s ease}
   }
 }
 
+
+/* Web: volumenes enteros, grandes y en negrita; se conserva la estructura de tablas */
+@media screen {
+  #tankTables td:nth-child(2) input[data-field="volumen"] {
+    font-size: 19px !important;
+    font-weight: 800 !important;
+    font-variant-numeric: tabular-nums;
+  }
+  #tankTables td:nth-child(1) b { font-size: 18px !important; font-weight: 800 !important; }
+  #tankTables input[data-field="volumen"]::-webkit-inner-spin-button,
+  #tankTables input[data-field="volumen"]::-webkit-outer-spin-button {
+    -webkit-appearance: none !important;
+    margin: 0 !important;
+  }
+  #tankTables input[data-field="volumen"] { appearance: textfield; -moz-appearance: textfield; }
+}
+
 </style>
 </head>
 <body>
@@ -329,7 +346,7 @@ function makeTables(){
   chunks.forEach(chunk=>{
     let html='<div class="tank-table"><table><thead><tr><th>Pileta</th><th>Volumen (m³)</th><th>Tipo de fluido</th><th>Observaciones</th></tr></thead><tbody>';
     chunk.forEach(t=>{
-      html+=`<tr><td><b>${esc(t.nombre)}</b></td><td><input type="number" min="0" step="0.1" data-id="${t.id}" data-field="volumen" value="${Number(t.volumen)||0}"></td><td><select data-id="${t.id}" data-field="tipo_fluido" class="${fluidClass(t.tipo_fluido)}">${FLUIDS.map(f=>`<option value="${esc(f)}" ${t.tipo_fluido===f?'selected':''}>${esc(f)}</option>`).join('')}</select></td><td><input type="text" data-id="${t.id}" data-field="observaciones" value="${esc(t.observaciones)}"></td></tr>`;
+      html+=`<tr><td><b>${esc(t.nombre)}</b></td><td><input type="number" min="0" step="1" inputmode="numeric" data-id="${t.id}" data-field="volumen" value="${Math.round(Number(t.volumen)||0)}"></td><td><select data-id="${t.id}" data-field="tipo_fluido" class="${fluidClass(t.tipo_fluido)}">${FLUIDS.map(f=>`<option value="${esc(f)}" ${t.tipo_fluido===f?'selected':''}>${esc(f)}</option>`).join('')}</select></td><td><input type="text" data-id="${t.id}" data-field="observaciones" value="${esc(t.observaciones)}"></td></tr>`;
     });
     html+='</tbody></table></div>';
     host.insertAdjacentHTML('beforeend',html);
@@ -339,12 +356,12 @@ function makeTables(){
     el.addEventListener('change',onTankChange);
   });
 }
-function onTankChange(e){if(isLoading||remoteLoadInProgress)return;const id=Number(e.target.dataset.id),field=e.target.dataset.field,t=tanks.find(x=>x.id===id);if(!t||!field)return;if(field==='volumen')t.volumen=Math.max(0,Number(e.target.value)||0);else t[field]=e.target.value;if(field==='tipo_fluido')e.target.className=fluidClass(t.tipo_fluido);renderTotals();saveLocal();queueRemoteSave()}
+function onTankChange(e){if(isLoading||remoteLoadInProgress)return;const id=Number(e.target.dataset.id),field=e.target.dataset.field,t=tanks.find(x=>x.id===id);if(!t||!field)return;if(field==='volumen')t.volumen=Math.max(0,Math.round(Number(e.target.value)||0));e.target.value=t.volumen;else t[field]=e.target.value;if(field==='tipo_fluido')e.target.className=fluidClass(t.tipo_fluido);renderTotals();saveLocal();queueRemoteSave()}
 function renderTotals(){const sums={};FLUIDS.forEach(f=>sums[f]=0);let total=0;tanks.forEach(t=>{const v=Math.max(0,Number(t.volumen)||0);sums[t.tipo_fluido]=(sums[t.tipo_fluido]||0)+v;total+=v});$('fluidTotals').innerHTML=FLUIDS.filter(f=>sums[f]>0).map(f=>`<tr><td><span class="${fluidClass(f)}">${esc(f)}</span></td><td>${sums[f].toFixed(1)}</td></tr>`).join('');$('grandTotal').textContent=total.toFixed(1);$('siloTotal').textContent=[0,1,2].reduce((sum,i)=>sum+Math.max(0,Number($('silo'+i).value)||0),0).toFixed(1)}
 function saveLocal(){const data={tanks,silos:[0,1,2].map(i=>Number($('silo'+i).value)||0),generalObs:$('generalObs').value};try{localStorage.setItem('mudPlantDraft',JSON.stringify(data))}catch(e){console.warn('No se pudo guardar el borrador local',e)}}
-function loadLocal(){try{const saved=localStorage.getItem('mudPlantDraft');if(!saved)return;const d=JSON.parse(saved);if(Array.isArray(d.tanks)&&d.tanks.length===42)tanks=d.tanks.map((t,i)=>({id:i+1,nombre:`HASA ${i+1}`,volumen:Number(t.volumen)||0,tipo_fluido:t.tipo_fluido||t.tipo||'SIN USO',observaciones:t.observaciones||''}));if(Array.isArray(d.silos))d.silos.forEach((v,i)=>{if(i<3)$('silo'+i).value=Number(v)||0});if(d.generalObs)$('generalObs').value=d.generalObs}catch(e){console.warn('No se pudo leer el borrador local',e)}}
-async function loadRemote(){if(!supabaseClient)return;remoteLoadInProgress=true;setStatus('Consultando base...','Leyendo las piletas compartidas...');const {data,error}=await supabaseClient.from('piletas').select('id,nombre,volumen,tipo_fluido,observaciones').order('id');remoteLoadInProgress=false;if(error){connected=false;setStatus('Error de conexión','No se pudieron leer las piletas: '+error.message);console.error('Supabase load error:',error);return}if(Array.isArray(data)&&data.length){data.forEach(row=>{const t=tanks.find(x=>x.id===Number(row.id));if(!t)return;t.nombre=row.nombre||t.nombre;t.volumen=Number(row.volumen)||0;t.tipo_fluido=row.tipo_fluido||'SIN USO';t.observaciones=row.observaciones||''});isLoading=true;makeTables();renderTotals();isLoading=false;saveLocal()}connected=true;setStatus('Conectado','Piletas sincronizadas con Supabase. Los cambios se guardan automáticamente.');$('lastChange').textContent=new Date().toLocaleTimeString('es-AR')}
-async function saveRemote(){if(!supabaseClient||!connected){setStatus('Guardado local (esta PC)','Sin conexión con Supabase. Los cambios quedan guardados en esta computadora.');return}setStatus('Guardando...','Enviando cambios a la base compartida...');const rows=tanks.map(t=>({id:t.id,nombre:t.nombre,volumen:Number(t.volumen)||0,tipo_fluido:t.tipo_fluido||'SIN USO',observaciones:t.observaciones||''}));const {error}=await supabaseClient.from('piletas').upsert(rows,{onConflict:'id'});if(error){setStatus('Error al guardar','No se guardaron los cambios en la base: '+error.message);console.error('Supabase save error:',error);return}setStatus('Conectado','Cambios guardados en la base compartida.');$('lastChange').textContent=new Date().toLocaleTimeString('es-AR')}
+function loadLocal(){try{const saved=localStorage.getItem('mudPlantDraft');if(!saved)return;const d=JSON.parse(saved);if(Array.isArray(d.tanks)&&d.tanks.length===42)tanks=d.tanks.map((t,i)=>({id:i+1,nombre:`HASA ${i+1}`,volumen:Math.max(0,Math.round(Number(t.volumen)||0)),tipo_fluido:t.tipo_fluido||t.tipo||'SIN USO',observaciones:t.observaciones||''}));if(Array.isArray(d.silos))d.silos.forEach((v,i)=>{if(i<3)$('silo'+i).value=Number(v)||0});if(d.generalObs)$('generalObs').value=d.generalObs}catch(e){console.warn('No se pudo leer el borrador local',e)}}
+async function loadRemote(){if(!supabaseClient)return;remoteLoadInProgress=true;setStatus('Consultando base...','Leyendo las piletas compartidas...');const {data,error}=await supabaseClient.from('piletas').select('id,nombre,volumen,tipo_fluido,observaciones').order('id');remoteLoadInProgress=false;if(error){connected=false;setStatus('Error de conexión','No se pudieron leer las piletas: '+error.message);console.error('Supabase load error:',error);return}if(Array.isArray(data)&&data.length){data.forEach(row=>{const t=tanks.find(x=>x.id===Number(row.id));if(!t)return;t.nombre=row.nombre||t.nombre;t.volumen=Math.max(0,Math.round(Number(row.volumen)||0));t.tipo_fluido=row.tipo_fluido||'SIN USO';t.observaciones=row.observaciones||''});isLoading=true;makeTables();renderTotals();isLoading=false;saveLocal()}connected=true;setStatus('Conectado','Piletas sincronizadas con Supabase. Los cambios se guardan automáticamente.');$('lastChange').textContent=new Date().toLocaleTimeString('es-AR')}
+async function saveRemote(){if(!supabaseClient||!connected){setStatus('Guardado local (esta PC)','Sin conexión con Supabase. Los cambios quedan guardados en esta computadora.');return}setStatus('Guardando...','Enviando cambios a la base compartida...');const rows=tanks.map(t=>({id:t.id,nombre:t.nombre,volumen:Math.max(0,Math.round(Number(t.volumen)||0)),tipo_fluido:t.tipo_fluido||'SIN USO',observaciones:t.observaciones||''}));const {error}=await supabaseClient.from('piletas').upsert(rows,{onConflict:'id'});if(error){setStatus('Error al guardar','No se guardaron los cambios en la base: '+error.message);console.error('Supabase save error:',error);return}setStatus('Conectado','Cambios guardados en la base compartida.');$('lastChange').textContent=new Date().toLocaleTimeString('es-AR')}
 function queueRemoteSave(){clearTimeout(saveTimer);saveTimer=setTimeout(saveRemote,800)}
 async function refreshRemote(){if(!supabaseClient||document.hidden||remoteLoadInProgress)return;await loadRemote()}
 function updatePrintDate(){const el=$('printDate');if(el)el.textContent=new Date().toLocaleString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});}
