@@ -111,6 +111,27 @@ button{transition:filter .15s ease}
   .summary-grid table th, .summary-grid table td, .bottom table th, .bottom table td { height: 7px !important; padding: 0 1px !important; font-size: 5px !important; }
 }
 
+
+/* FORMATO DE IMPRESION INSPIRADO EN LA PLANILLA EXCEL */
+@media print {
+ @page { size: A4 landscape; margin: 3mm; }
+ main { display:grid !important; grid-template-columns:minmax(0, 2.25fr) minmax(0, 1fr) !important; grid-template-rows:auto auto 1fr auto !important; column-gap:3mm !important; row-gap:1mm !important; align-items:start !important; }
+ main > .statusbar, main > .note { grid-column:1 / -1 !important; }
+ main > section.panel { grid-column:1 !important; grid-row:3 / span 2 !important; min-width:0 !important; }
+ main > .summary-grid { grid-column:2 !important; grid-row:3 !important; display:flex !important; flex-direction:column !important; gap:2mm !important; margin:0 !important; min-width:0 !important; }
+ main > .bottom { grid-column:2 !important; grid-row:4 !important; display:flex !important; flex-direction:column !important; gap:2mm !important; margin:0 !important; min-width:0 !important; }
+ main > .legend { display:none !important; }
+ #tankTables.tanks { grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important; gap:1.5mm !important; }
+ #tankTables .tank-table h3 { display:none !important; }
+ .panel h2 { font-size:7px !important; padding:2px 3px !important; }
+ th, td { font-size:5.5px !important; height:9px !important; padding:0 1px !important; line-height:1 !important; }
+ input, select, textarea { font-size:5px !important; height:8px !important; min-height:0 !important; padding:0 1px !important; }
+ .summary-grid .panel, .bottom .panel { width:100% !important; margin:0 !important; }
+ .summary-grid table th, .summary-grid table td, .bottom table th, .bottom table td { font-size:5.5px !important; height:9px !important; }
+ .panel-content { padding:2px !important; }
+ .panel, .tank-table { border:0.6px solid #333 !important; border-radius:0 !important; box-shadow:none !important; }
+ .tank-table th, .panel h2 { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+}
 </style>
 </head>
 <body>
