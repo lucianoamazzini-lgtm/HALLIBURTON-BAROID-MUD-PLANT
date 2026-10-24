@@ -22,6 +22,7 @@ select{width:100%;border:1px solid transparent;border-radius:4px;padding:6px 3px
 @media(max-width:650px){.tanks,.sidebar,.bottom{grid-template-columns:1fr}header{padding:14px}.brand h1{font-size:25px}main{padding:8px}}
 @media print{
  @page{size:A4 landscape;margin:7mm}
+ *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;color-adjust:exact!important}
  body{background:white;font-size:8px;color:#111}header{padding:0 0 7px;background:white!important;color:#111;border-bottom:2px solid var(--navy);margin-bottom:5px}.brand h1{font-size:21px;color:var(--navy)}.brand p{color:#333;font-size:10px}.actions,.statusbar,.no-print{display:none!important}main{padding:0;max-width:none}.layout{grid-template-columns:minmax(0,1fr) 210px;gap:6px}.tanks{gap:5px}.tank-table,.panel,.fieldbox{border-radius:0;break-inside:avoid}th{padding:4px 3px;font-size:7px}td{padding:2px 3px;font-size:7px}input,select,textarea,.vol,.obs{border:0!important;padding:1px!important;background:transparent!important;color:#111!important;font-size:7px!important;appearance:none}.sidebar{gap:5px}.panel h2{font-size:10px;padding:5px}.panel td,.panel th{padding:3px}.bottom{margin-top:5px;gap:5px}.fieldbox{padding:5px}.fieldbox h3{font-size:9px}.fieldbox textarea{min-height:34px}.legend{margin-top:5px;padding:5px;gap:7px}.swatch{width:13px;height:9px}.print-only{display:block}.print-meta{font-size:9px;display:flex;gap:15px;flex-wrap:wrap}.signature{height:30px;border-bottom:1px solid #333;margin:12px 10px 3px}.bottom{grid-template-columns:1fr 140px 140px}
 }
 </style>
@@ -58,8 +59,8 @@ select{width:100%;border:1px solid transparent;border-radius:4px;padding:6px 3px
  <div class="bottom">
   <section class="fieldbox"><h3>Observaciones generales</h3><textarea id="generalObs" placeholder="Novedades del turno, transferencias, tareas pendientes..."></textarea></section>
   <section class="fieldbox"><h3>Datos del parte</h3><div class="small">La fecha y hora del parte se generan al imprimir.</div></section>
-  <section class="fieldbox print-only"><div class="signature"></div><b>Firma operador</b><div id="signOperator"></div></section>
-  <section class="fieldbox print-only"><div class="signature"></div><b>Firma supervisor</b><div>Nombre y apellido</div></section>
+  <section class="fieldbox print-only"><div class="signature"></div><b>Firma turno saliente</b><div id="signOperator"></div></section>
+  <section class="fieldbox print-only"><div class="signature"></div><b>Firma turno entrante</b><div>Nombre y apellido</div></section>
  </div>
  <div class="legend"><strong>Referencias de colores</strong>
   <span class="legend-item"><i class="swatch fluid-DENSO"></i>Denso</span><span class="legend-item"><i class="swatch fluid-BASE"></i>Base</span><span class="legend-item"><i class="swatch fluid-DIESEL"></i>Diesel</span><span class="legend-item"><i class="swatch fluid-SALMUERA"></i>Salmuera</span><span class="legend-item"><i class="swatch fluid-AGUA"></i>Agua</span><span class="legend-item"><i class="swatch fluid-CORTE"></i>Corte</span><span class="legend-item"><i class="swatch fluid-LIVIANO"></i>Liviano</span><span class="legend-item"><i class="swatch fluid-BASE-CONCENTRADO"></i>Base Concentrado</span><span class="legend-item"><i class="swatch fluid-KILL-MUD"></i>Kill Mud</span><span class="legend-item"><i class="swatch fluid-DIESEL-CONTAMINADO"></i>Diesel Contaminado</span><span class="legend-item"><i class="swatch fluid-TRON"></i>Tron</span><span class="legend-item"><i class="swatch fluid-SIN-USO"></i>Sin uso</span>
