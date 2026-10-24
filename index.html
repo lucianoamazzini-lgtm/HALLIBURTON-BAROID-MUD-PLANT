@@ -133,18 +133,39 @@ button{transition:filter .15s ease}
  .tank-table th, .panel h2 { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
 }
 
-/* IMPRESION: mostrar solamente la tabla de piletas */
+/* IMPRESION: tabla estilo Excel + fecha/hora + totales sin porcentajes + silos */
+@page { size: A4 landscape; margin: 5mm; }
 @media print {
-  header, .statusbar, .note, main > .summary-grid, main > .bottom, main > .legend, main > section.panel:not(:has(#tankTables)) { display: none !important; }
-  @page { size: A4 landscape; margin: 5mm; }
-  main { margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: none !important; }
-  main > section.panel:has(#tankTables) { display: block !important; margin: 0 !important; padding: 0 !important; border: 0 !important; box-shadow: none !important; }
-  main > section.panel:has(#tankTables) > h2 { display: none !important; }
-  #tankTables.tanks { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 3mm !important; padding: 0 !important; margin: 0 !important; }
-  #tankTables .tank-table { min-width: 0 !important; width: 100% !important; overflow: visible !important; break-inside: avoid !important; }
-  #tankTables table { width: 100% !important; table-layout: fixed !important; border-collapse: collapse !important; }
-  #tankTables th, #tankTables td { font-size: 8pt !important; padding: 2px 3px !important; height: 17px !important; border: 1px solid #222 !important; }
-  #tankTables input, #tankTables select { font-size: 7.5pt !important; height: 16px !important; padding: 0 2px !important; border: 0 !important; color: #111 !important; background: transparent !important; }
+  * { box-shadow:none !important; }
+  body { background:#fff !important; color:#111 !important; font-size:7pt !important; -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+  header { display:flex !important; padding:2mm 0 !important; margin:0 0 2mm !important; min-height:0 !important; background:#fff !important; color:#111 !important; border-bottom:2px solid #d71920 !important; }
+  header .brand-logo, .brand-logo { width:22px !important; height:22px !important; }
+  header h1, .brand h1 { font-size:12pt !important; margin:0 !important; color:#111 !important; }
+  header p, .brand p { font-size:6pt !important; margin:0 !important; color:#333 !important; }
+  header .actions, .statusbar, .note, main > .legend { display:none !important; }
+  main { display:grid !important; grid-template-columns:minmax(0, 2.2fr) minmax(0, .85fr) !important; grid-template-rows:auto auto auto !important; gap:2mm !important; width:100% !important; max-width:none !important; margin:0 !important; padding:0 !important; }
+  main > section.panel:has(#tankTables) { display:block !important; grid-column:1 !important; grid-row:1 / span 3 !important; min-width:0 !important; margin:0 !important; padding:0 !important; border:0 !important; }
+  main > section.panel:has(#tankTables) > h2 { display:none !important; }
+  #tankTables.tanks { display:grid !important; grid-template-columns:repeat(2,minmax(0,1fr)) !important; gap:2mm !important; padding:0 !important; margin:0 !important; }
+  #tankTables .tank-table { width:100% !important; min-width:0 !important; margin:0 !important; border:1px solid #222 !important; border-radius:0 !important; break-inside:avoid !important; }
+  #tankTables .tank-table h3 { display:none !important; }
+  #tankTables table { width:100% !important; table-layout:fixed !important; border-collapse:collapse !important; }
+  #tankTables th, #tankTables td { font-size:6.2pt !important; padding:1px 2px !important; height:12px !important; border:1px solid #222 !important; line-height:1.05 !important; overflow-wrap:anywhere !important; }
+  #tankTables input, #tankTables select { font-size:6pt !important; height:11px !important; min-height:0 !important; padding:0 1px !important; border:0 !important; color:#111 !important; background:transparent !important; }
+  main > .summary-grid { display:flex !important; flex-direction:column !important; grid-column:2 !important; grid-row:1 !important; gap:2mm !important; margin:0 !important; min-width:0 !important; }
+  main > .summary-grid .panel { display:block !important; margin:0 !important; padding:0 !important; border:1px solid #222 !important; border-radius:0 !important; break-inside:avoid !important; }
+  main > .summary-grid .panel h2, main > .bottom .panel h2 { display:block !important; margin:0 !important; padding:2px 3px !important; font-size:7pt !important; line-height:1.1 !important; background:#d71920 !important; color:#fff !important; }
+  .summary-grid table { width:100% !important; border-collapse:collapse !important; table-layout:fixed !important; }
+  .summary-grid th, .summary-grid td { font-size:6pt !important; padding:1px 2px !important; height:11px !important; border:1px solid #333 !important; }
+  /* Ocultar la columna de porcentajes y su total */
+  #fluidTotals { }
+  main > .summary-grid section:first-child table th:nth-child(3), main > .summary-grid section:first-child table td:nth-child(3) { display:none !important; }
+  main > .bottom { display:flex !important; flex-direction:column !important; grid-column:2 !important; grid-row:2 !important; gap:2mm !important; margin:0 !important; min-width:0 !important; }
+  main > .bottom .panel { display:block !important; margin:0 !important; padding:0 !important; border:1px solid #222 !important; border-radius:0 !important; }
+  .panel-content { padding:2px 3px !important; font-size:6pt !important; }
+  .panel-content p { margin:2px 0 !important; }
+  input, textarea { font-size:6pt !important; color:#111 !important; background:transparent !important; }
+  .fluid-DENSO,.fluid-BASE,.fluid-DIESEL,.fluid-SALMUERA,.fluid-AGUA,.fluid-CORTE,.fluid-LIVIANO,.fluid-BASE-CONCENTRADO,.fluid-KILL-MUD,.fluid-DIESEL-CONTAMINADO,.fluid-TRON,.fluid-SIN-USO,.swatch { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
 }
 
 </style>
