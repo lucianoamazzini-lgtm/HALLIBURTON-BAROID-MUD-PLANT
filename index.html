@@ -85,6 +85,32 @@ button{transition:filter .15s ease}
   .panel, .tank-table, #tankTables, .summary-grid, .bottom { break-inside: avoid !important; page-break-inside: avoid !important; }
 }
 
+
+/* AJUSTE EXTRA: impresion mas compacta */
+@media print {
+  @page { size: A4 landscape; margin: 2.5mm; }
+  body { font-size: 5.5px !important; line-height: .95 !important; }
+  header { padding: 1.5mm 2mm !important; gap: 2px !important; }
+  .brand { gap: 3px !important; padding: 0 2px !important; }
+  .brand-logo { width: 26px !important; height: 26px !important; }
+  .brand h1 { font-size: 11px !important; margin: 0 !important; }
+  .brand p { font-size: 5px !important; margin: 0 !important; }
+  main { padding: 1mm 0 0 !important; }
+  .statusbar { gap: 2px !important; margin: 0 0 1px !important; }
+  .pill { padding: 1px 3px !important; font-size: 5px !important; }
+  .note { margin: 0 0 1px !important; font-size: 5px !important; line-height: 1 !important; }
+  .panel h2 { padding: 1.5px 3px !important; font-size: 6px !important; }
+  #tankTables.tanks { gap: 2px !important; padding: 1px !important; }
+  th, td { padding: 0 1px !important; font-size: 5px !important; line-height: .95 !important; height: 8px !important; }
+  input, select, textarea { height: 7px !important; padding: 0 !important; font-size: 5px !important; line-height: .9 !important; }
+  .summary-grid { gap: 2px !important; margin-top: 1px !important; }
+  .bottom { gap: 2px !important; margin-top: 1px !important; }
+  .summary-grid .panel h2, .bottom .panel h2 { padding: 1.5px !important; font-size: 5.5px !important; }
+  .panel-content { padding: 1.5px !important; }
+  .panel-content p, .panel-content label, .panel-content div { margin-top: 0 !important; margin-bottom: 0 !important; }
+  .summary-grid table th, .summary-grid table td, .bottom table th, .bottom table td { height: 7px !important; padding: 0 1px !important; font-size: 5px !important; }
+}
+
 </style>
 </head>
 <body>
