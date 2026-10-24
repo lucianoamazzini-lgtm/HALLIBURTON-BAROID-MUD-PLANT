@@ -205,10 +205,10 @@ button{transition:filter .15s ease}
   #tankTables .fluid-AGUA { background:#55b9ed !important; color:#111 !important; display:block !important; }
   #tankTables .fluid-CORTE { background:#ff8d45 !important; color:#111 !important; display:block !important; }
   #tankTables .fluid-LIVIANO { background:#f5f4df !important; color:#111 !important; display:block !important; }
-  #tankTables .fluid-BASE-CONCENTRADO { background:#70d45b !important; color:#111 !important; display:block !important; }
+  #tankTables .fluid-BASE-CONCENTRADO { background:#c6a0ff !important; color:#32165c !important; display:block !important; }
   #tankTables .fluid-KILL-MUD { background:#ffb52e !important; color:#111 !important; display:block !important; }
   #tankTables .fluid-DIESEL-CONTAMINADO { background:#ffcf35 !important; color:#111 !important; display:block !important; }
-  #tankTables .fluid-TRON { background:#9a64c9 !important; color:#111 !important; display:block !important; }
+  #tankTables .fluid-TRON { background:#f2afa4 !important; color:#481a13 !important; display:block !important; }
   #tankTables .fluid-SIN-USO { background:#f1f2f3 !important; color:#222 !important; display:block !important; }
   #tankTables td:has(select.fluid-SIN-USO) { background:#f1f2f3 !important; color:#222 !important; }
   #tankTables select.fluid-SIN-USO, #tankTables option[value="SIN USO"] { background-color:#f1f2f3 !important; color:#222 !important; }
@@ -239,7 +239,7 @@ button{transition:filter .15s ease}
 
  <!-- DESPUÉS: TOTALES Y SILOS -->
  <div class="summary-grid">
-  <section class="panel"><h2>Totales por Tipo de Fluido</h2><table><thead><tr><th>Tipo de fluido</th><th>m³</th><th>%</th></tr></thead><tbody id="fluidTotals"></tbody><tfoot><tr><td>Total general</td><td id="grandTotal">0.0</td><td id="grandPercent">0%</td></tr></tfoot></table></section>
+  <section class="panel"><h2>Totales por Tipo de Fluido</h2><table><thead><tr><th>Tipo de fluido</th><th>m³</th></tr></thead><tbody id="fluidTotals"></tbody><tfoot><tr><td>Total general</td><td id="grandTotal">0.0</td></tr></tfoot></table></section>
   <section class="panel"><h2>Silos de Barita</h2><table><thead><tr><th>Silo</th><th>Toneladas</th></tr></thead><tbody>
    <tr><td>Silo 1</td><td><input type="number" min="0" step="0.1" id="silo0" value="0"></td></tr>
    <tr><td>Silo 2</td><td><input type="number" min="0" step="0.1" id="silo1" value="0"></td></tr>
@@ -285,7 +285,7 @@ function makeTables(){
   });
 }
 function onTankChange(e){if(isLoading||remoteLoadInProgress)return;const id=Number(e.target.dataset.id),field=e.target.dataset.field,t=tanks.find(x=>x.id===id);if(!t||!field)return;if(field==='volumen')t.volumen=Math.max(0,Number(e.target.value)||0);else t[field]=e.target.value;if(field==='tipo_fluido')e.target.className=fluidClass(t.tipo_fluido);renderTotals();saveLocal();queueRemoteSave()}
-function renderTotals(){const sums={};FLUIDS.forEach(f=>sums[f]=0);let total=0;tanks.forEach(t=>{const v=Math.max(0,Number(t.volumen)||0);sums[t.tipo_fluido]=(sums[t.tipo_fluido]||0)+v;total+=v});$('fluidTotals').innerHTML=FLUIDS.filter(f=>sums[f]>0).map(f=>`<tr><td><span class="${fluidClass(f)}">${esc(f)}</span></td><td>${sums[f].toFixed(1)}</td><td>${total?(sums[f]/total*100).toFixed(1)+'%':'0%'}</td></tr>`).join('');$('grandTotal').textContent=total.toFixed(1);$('grandPercent').textContent=total?'100%':'0%';$('siloTotal').textContent=[0,1,2].reduce((sum,i)=>sum+Math.max(0,Number($('silo'+i).value)||0),0).toFixed(1)}
+function renderTotals(){const sums={};FLUIDS.forEach(f=>sums[f]=0);let total=0;tanks.forEach(t=>{const v=Math.max(0,Number(t.volumen)||0);sums[t.tipo_fluido]=(sums[t.tipo_fluido]||0)+v;total+=v});$('fluidTotals').innerHTML=FLUIDS.filter(f=>sums[f]>0).map(f=>`<tr><td><span class="${fluidClass(f)}">${esc(f)}</span></td><td>${sums[f].toFixed(1)}</td></tr>`).join('');$('grandTotal').textContent=total.toFixed(1);$('siloTotal').textContent=[0,1,2].reduce((sum,i)=>sum+Math.max(0,Number($('silo'+i).value)||0),0).toFixed(1)}
 function saveLocal(){const data={tanks,silos:[0,1,2].map(i=>Number($('silo'+i).value)||0),well:$('well').value,operator:$('operator').value,generalObs:$('generalObs').value};try{localStorage.setItem('mudPlantDraft',JSON.stringify(data))}catch(e){console.warn('No se pudo guardar el borrador local',e)}}
 function loadLocal(){try{const saved=localStorage.getItem('mudPlantDraft');if(!saved)return;const d=JSON.parse(saved);if(Array.isArray(d.tanks)&&d.tanks.length===42)tanks=d.tanks.map((t,i)=>({id:i+1,nombre:`HASA ${i+1}`,volumen:Number(t.volumen)||0,tipo_fluido:t.tipo_fluido||t.tipo||'SIN USO',observaciones:t.observaciones||''}));if(Array.isArray(d.silos))d.silos.forEach((v,i)=>{if(i<3)$('silo'+i).value=Number(v)||0});if(d.well)$('well').value=d.well;if(d.operator)$('operator').value=d.operator;if(d.generalObs)$('generalObs').value=d.generalObs}catch(e){console.warn('No se pudo leer el borrador local',e)}}
 async function loadRemote(){if(!supabaseClient)return;remoteLoadInProgress=true;setStatus('Consultando base...','Leyendo las piletas compartidas...');const {data,error}=await supabaseClient.from('piletas').select('id,nombre,volumen,tipo_fluido,observaciones').order('id');remoteLoadInProgress=false;if(error){connected=false;setStatus('Error de conexión','No se pudieron leer las piletas: '+error.message);console.error('Supabase load error:',error);return}if(Array.isArray(data)&&data.length){data.forEach(row=>{const t=tanks.find(x=>x.id===Number(row.id));if(!t)return;t.nombre=row.nombre||t.nombre;t.volumen=Number(row.volumen)||0;t.tipo_fluido=row.tipo_fluido||'SIN USO';t.observaciones=row.observaciones||''});isLoading=true;makeTables();renderTotals();isLoading=false;saveLocal()}connected=true;setStatus('Conectado','Piletas sincronizadas con Supabase. Los cambios se guardan automáticamente.');$('lastChange').textContent=new Date().toLocaleTimeString('es-AR')}
