@@ -220,6 +220,46 @@ button{transition:filter .15s ease}
   .statusbar, .note, header .actions, main > .legend { display:none !important; }
   input, select { color:#111 !important; }
 }
+
+/* AJUSTE FINAL: los paneles de totales y silos ocupan toda la altura de las piletas, conservando el ancho */
+@media print {
+  main { align-items: stretch !important; }
+  main > section.panel:has(#tankTables) { align-self: stretch !important; height: 100% !important; }
+  main > .summary-grid {
+    align-self: stretch !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    width: 48mm !important;
+    max-width: 48mm !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: minmax(0, 2.4fr) minmax(0, 1fr) !important;
+    gap: 2mm !important;
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+  }
+  main > .summary-grid > .panel {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+  }
+  main > .summary-grid > .panel table {
+    flex: 1 1 auto !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    width: 100% !important;
+    table-layout: fixed !important;
+    border-collapse: collapse !important;
+  }
+  main > .summary-grid > .panel table tbody { height: 100% !important; }
+  main > .summary-grid > .panel h2 {
+    flex: 0 0 auto !important;
+    margin: 0 !important;
+  }
+}
+
 </style>
 </head>
 <body>
