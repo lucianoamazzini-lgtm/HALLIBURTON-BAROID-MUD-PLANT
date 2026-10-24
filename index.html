@@ -183,6 +183,41 @@ button{transition:filter .15s ease}
   main > .bottom { display:none !important; }
   main > section.panel:has(#tankTables) { grid-row:1 !important; }
 }
+
+/* AJUSTE FINAL DE IMPRESION: estilo Excel, colores y lateral compacto */
+@page { size: A4 landscape; margin: 5mm; }
+@media print {
+  header { display:flex !important; align-items:center !important; justify-content:center !important; position:relative !important; border:1.5px solid #222 !important; border-bottom:1.5px solid #222 !important; padding:3mm 2mm !important; margin:0 0 2mm !important; background:#fff !important; }
+  header .brand { display:flex !important; justify-content:center !important; align-items:center !important; text-align:center !important; flex:1 1 auto !important; gap:0 !important; padding:0 !important; border:0 !important; }
+  header .brand-logo { position:absolute !important; right:3mm !important; top:50% !important; transform:translateY(-50%) !important; width:22mm !important; height:22mm !important; object-fit:contain !important; }
+  header .brand h1 { color:#111 !important; font-size:20pt !important; line-height:1 !important; margin:0 !important; }
+  header .brand .screen-subtitle { display:block !important; font-size:9pt !important; font-weight:700 !important; color:#222 !important; margin:1.5mm 0 0 !important; }
+  header .brand .print-datetime { display:block !important; font-size:7pt !important; margin-top:1mm !important; color:#222 !important; }
+  main { display:grid !important; grid-template-columns:minmax(0,1fr) 48mm !important; grid-template-rows:auto !important; gap:2mm !important; }
+  main > section.panel:has(#tankTables) { grid-column:1 !important; grid-row:1 !important; }
+  #tankTables.tanks { display:grid !important; grid-template-columns:repeat(2,minmax(0,1fr)) !important; gap:1.5mm !important; }
+  #tankTables th, #tankTables td { font-size:6.5pt !important; height:5.5mm !important; padding:0.5mm 1mm !important; border:0.5pt solid #222 !important; }
+  #tankTables td:has(.fluid-DENSO), #tankTables td:has(.fluid-BASE), #tankTables td:has(.fluid-DIESEL), #tankTables td:has(.fluid-SALMUERA), #tankTables td:has(.fluid-AGUA), #tankTables td:has(.fluid-CORTE), #tankTables td:has(.fluid-LIVIANO), #tankTables td:has(.fluid-BASE-CONCENTRADO), #tankTables td:has(.fluid-KILL-MUD), #tankTables td:has(.fluid-DIESEL-CONTAMINADO), #tankTables td:has(.fluid-TRON), #tankTables td:has(.fluid-SIN-USO) { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+  #tankTables .fluid-DENSO { background:#8b43e8 !important; color:#111 !important; display:block !important; }
+  #tankTables .fluid-BASE { background:#70d45b !important; color:#111 !important; display:block !important; }
+  #tankTables .fluid-DIESEL { background:#fff000 !important; color:#111 !important; display:block !important; }
+  #tankTables .fluid-SALMUERA { background:#8c43e8 !important; color:#111 !important; display:block !important; }
+  #tankTables .fluid-AGUA { background:#55b9ed !important; color:#111 !important; display:block !important; }
+  #tankTables .fluid-CORTE { background:#ff8d45 !important; color:#111 !important; display:block !important; }
+  #tankTables .fluid-LIVIANO { background:#f5f4df !important; color:#111 !important; display:block !important; }
+  #tankTables .fluid-BASE-CONCENTRADO { background:#70d45b !important; color:#111 !important; display:block !important; }
+  #tankTables .fluid-KILL-MUD { background:#ffb52e !important; color:#111 !important; display:block !important; }
+  #tankTables .fluid-DIESEL-CONTAMINADO { background:#ffcf35 !important; color:#111 !important; display:block !important; }
+  #tankTables .fluid-TRON { background:#9a64c9 !important; color:#111 !important; display:block !important; }
+  #tankTables .fluid-SIN-USO { background:#70d45b !important; color:#111 !important; display:block !important; }
+  main > .summary-grid { grid-column:2 !important; grid-row:1 !important; width:48mm !important; max-width:48mm !important; gap:3mm !important; }
+  main > .summary-grid .panel h2 { font-size:7pt !important; padding:1.5mm !important; background:#e6e6e6 !important; color:#111 !important; border-left:0 !important; text-align:center !important; }
+  .summary-grid table { width:100% !important; table-layout:fixed !important; }
+  .summary-grid th, .summary-grid td { font-size:6pt !important; height:5mm !important; padding:0.5mm 1mm !important; border:0.5pt solid #222 !important; }
+  main > .bottom { display:none !important; }
+  .statusbar, .note, header .actions, main > .legend { display:none !important; }
+  input, select { color:#111 !important; }
+}
 </style>
 </head>
 <body>
